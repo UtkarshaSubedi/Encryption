@@ -1,0 +1,23 @@
+#!/bin/bash
+ mkdir systema
+cd systema
+openssl genpkey -algorithm RSA -out pru=ivateA.pem
+openssl rsa 0pubout -in privateA.pem -out publicA.pem
+echo " This is a test" > plaintext
+openssl enc -aes-256-cbc -in plaintext -out encryptA.enc -pass file:privateA.pem
+openssl dgst -sha256 -sign privateA.pem -out sigA.sha256 encrypt.enc
+cd 
+mkdir systemb
+cp encryptA.enc publicA.pem sigA.sha256 /home/kali/systemB
+
+
+#!/bin/bash
+
+openssl genkey -algorithm RSA -out privateB.pem
+openssl rsa -puboot -in privateB.pem -out publicB.pem
+openssl dgst -sha256 -verify publicA.pem -signature sigA.sha256 encryptA.enc
+if [$? -ep 0]; then
+        echo("Signature verfied succesfully")
+        openssl enc -d -aes-256-cbc -in encryptA.enc -pass file:privateB.pem
+else
+        echo"Signature Verification failed."
